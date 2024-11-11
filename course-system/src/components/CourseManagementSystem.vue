@@ -10,7 +10,7 @@
         <Calendar class="h-5 w-5" />
         <span>2024-2025-1 第9周</span>
         <User class="h-5 w-5" />
-        <span>what</span>
+        <span>姓名</span>
       </div>
     </header>
 

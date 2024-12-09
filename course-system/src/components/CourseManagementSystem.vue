@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col h-screen bg-gray-100">
+  <div class="flex flex-col min-h-screen w-full bg-gray-100">
     <!-- Header -->
     <header class="bg-blue-600 text-white p-4 flex items-center justify-between">
       <div class="flex items-center space-x-4">
@@ -10,13 +10,13 @@
         <Calendar class="h-5 w-5" />
         <span>2024-2025-1 第9周</span>
         <User class="h-5 w-5" />
-        <span>what</span>
+        <span>姓名</span>
       </div>
     </header>
 
-    <div class="flex flex-1">
+    <div class="flex flex-1 w-full overflow-hidden">
       <!-- Sidebar -->
-      <aside class="w-64 bg-white border-r">
+      <aside class="w-1/6 min-w-[200px] bg-white border-r overflow-y-auto">
         <div class="p-4">
           <div class="relative">
             <Search class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
@@ -41,7 +41,7 @@
       </aside>
 
       <!-- Main Content -->
-      <main class="flex-1 p-6">
+      <main class="flex-1 p-6 overflow-y-auto">
         <div class="bg-white rounded-lg shadow">
           <div class="p-4 border-b flex items-center justify-between">
             <div class="flex items-center space-x-4">
@@ -61,36 +61,42 @@
           </div>
 
           <!-- Schedule Grid -->
-          <div class="grid grid-cols-8 gap-px bg-gray-200">
-            <div class="bg-white p-4 font-medium">节次</div>
-            <div
-              v-for="day in weekDays"
-              :key="day"
-              class="bg-white p-4 font-medium text-center"
-            >
-              {{ day }}
+          <div class="flex flex-col bg-gray-200 w-full">
+            <!-- 表头行 -->
+            <div class="flex w-full">
+              <div class="bg-white p-4 font-medium w-[12.5%]">节次</div>
+              <div
+                v-for="day in weekDays"
+                :key="day"
+                class="bg-white p-4 font-medium text-center flex-1"
+              >
+                {{ day }}
+              </div>
             </div>
 
+            <!-- 课程行 -->
             <template v-for="(item, index) in scheduleItems" :key="index">
-              <div class="bg-white p-4">
-                <div class="text-sm">
-                  <div>{{ item.period }}</div>
-                  <div class="text-gray-500">{{ item.time }}</div>
-                  <div class="text-gray-500">{{ item.timeRange }}</div>
+              <div class="flex w-full">
+                <div class="bg-white p-4 w-[12.5%]">
+                  <div class="text-sm">
+                    <div>{{ item.period }}</div>
+                    <div class="text-gray-500">{{ item.time }}</div>
+                    <div class="text-gray-500">{{ item.timeRange }}</div>
+                  </div>
                 </div>
+                <div
+                  v-for="i in 7"
+                  :key="i"
+                  class="bg-white p-4 min-h-[100px] flex-1"
+                ></div>
               </div>
-              <div
-                v-for="i in 7"
-                :key="i"
-                class="bg-white p-4 min-h-[100px]"
-              ></div>
             </template>
           </div>
         </div>
       </main>
 
       <!-- Right Sidebar -->
-      <aside class="w-80 bg-white border-l p-4">
+      <aside class="w-1/6 min-w-[250px] bg-white border-l p-4 overflow-y-auto">
         <div class="mb-6">
           <h3 class="font-semibold mb-4">学业进展</h3>
           <div class="relative pt-1">
@@ -125,13 +131,11 @@
 import { Search, Bell, User, Calendar } from 'lucide-vue-next'
 
 const menuItems = [
-  { icon: "📊", label: "我的课面" },
-  { icon: "📘", label: "学籍成绩" },
-  { icon: "🎓", label: "培养管理" },
-  { icon: "📝", label: "考试报名" },
-  { icon: "💡", label: "实践环节" },
-  { icon: "⭐", label: "教学评价" },
-  { icon: "🔄", label: "国内交流生" }
+  { icon: "📘", label: "我的主页" },
+  { icon: "📊", label: "课程成绩" },
+  { icon: "🎓", label: "选课管理" },
+  { icon: "📝", label: "考试信息" },
+  { icon: "⭐", label: "教学评价" }
 ]
 
 const weekDays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']

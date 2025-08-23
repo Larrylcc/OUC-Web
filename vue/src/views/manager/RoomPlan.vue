@@ -10,21 +10,22 @@
       <el-button type="warning" plain style="margin-left: 10px" @click="reset">重置</el-button>
     </div>
 
-    <div class="operation" v-if="user.role === 'ADMIN'">
+    <div class="operation" v-if="user.role === 'GUANLIYUAN'">
       <el-button type="primary" plain @click="handleAdd">新增</el-button>
       <el-button type="danger" plain @click="delBatch">批量删除</el-button>
     </div>
 
     <div class="table">
       <el-table :data="tableData" stripe  @selection-change="handleSelectionChange">
-        <el-table-column type="selection" width="55" align="center" v-if="user.role === 'ADMIN'"></el-table-column>
+        <el-table-column type="selection" width="55" align="center" v-if="user.role === 'GUANLIYUAN'"></el-table-column>
         <el-table-column prop="id" label="序号" width="80" align="center" sortable></el-table-column>
         <el-table-column prop="name" label="教室名称" show-overflow-tooltip></el-table-column>
         <el-table-column prop="status" label="使用状态" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="content" label="使用说明" show-overflow-tooltip></el-table-column>
-        <el-table-column prop="num" label="容纳人数"></el-table-column>
+        <el-table-column prop="neirong" label="使用说明" show-overflow-tooltip></el-table-column>
+        <el-table-column prop="renshu" label="容纳人数"></el-table-column>
+        <el-table-column prop="build" label="所在建筑"></el-table-column>
 
-        <el-table-column label="操作" width="180" align="center" v-if="user.role === 'ADMIN'">
+        <el-table-column label="操作" width="180" align="center" v-if="user.role === 'GUANLIYUAN'">
           <template v-slot="scope">
             <el-button plain type="primary" @click="handleEdit(scope.row)" size="mini">编辑</el-button>
             <el-button plain type="danger" size="mini" @click=del(scope.row.id)>删除</el-button>
@@ -57,11 +58,11 @@
             <el-option label="占用" value="占用"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item prop="num" label="容纳人数">
-          <el-input v-model="form.num" autocomplete="off"></el-input>
+        <el-form-item prop="renshu" label="容纳人数">
+          <el-input v-model="form.renshu" autocomplete="off"></el-input>
         </el-form-item>
-        <el-form-item prop="content" label="教室说明">
-          <el-input type="textarea" :rows="5" v-model="form.content" autocomplete="off"></el-input>
+        <el-form-item prop="neirong" label="教室说明">
+          <el-input type="textarea" :rows="5" v-model="form.neirong" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -95,10 +96,10 @@ export default {
         status: [
           {required: true, message: '请选择状态', trigger: 'blur'},
         ],
-        num: [
+        renshu: [
           {required: true, message: '请输入容纳人数', trigger: 'blur'},
         ],
-        content: [
+        neirong: [
           {required: true, message: '请输入使用说明', trigger: 'blur'},
         ]
       },
@@ -196,5 +197,62 @@ export default {
 </script>
 
 <style scoped>
+.guanliyuan-container {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 10px;
+}
 
+.search, .operation {
+  margin-bottom: 20px;
+}
+
+.search .el-input {
+  background-color: #fff;
+  border-radius: 5px;
+}
+
+.search-btn, .reset-btn {
+  margin-left: 10px;
+  border-radius: 5px;
+}
+
+.operation-btn {
+  border-radius: 5px;
+}
+
+.table .custom-table {
+  background-color: #fff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+.table .avatar-container {
+  display: flex;
+  align-items: center;
+}
+
+.table .el-image {
+  border-radius: 50%;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-neirong: flex-end;
+  gap: 10px;
+}
+
+.el-dialog {
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.el-button {
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.el-button:hover {
+  background-color: #f5f5f5;
+}
 </style>

@@ -4,65 +4,119 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.ExamplanMapper">
 
+    <!-- 定义基础列，用于在查询中复用，避免字段重复声明 -->
     <sql id="Base_Column_List">
-        id,name,content,time
+        id, name, neirong, time
     </sql>
 
+    <!-- 查询所有考试计划，支持动态条件筛选 -->
     <select id="selectAll" resultType="com.example.entity.Examplan">
+        <!-- 引入基础列，避免重复列出所有字段 -->
         select
         <include refid="Base_Column_List" />
         from examplan
         <where>
-            <if test="id != null"> and id= #{id}</if>
-            <if test="name != null"> and name like concat('%', #{name}, '%')</if>
-            <if test="content != null"> and content= #{content}</if>
-            <if test="time != null"> and time= #{time}</if>
+            <!-- 根据传入的参数，动态生成查询条件 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null"> and name like concat('%', #{name}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null"> and neirong = #{neirong}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null"> and time = #{time}</when>
+                <otherwise></otherwise>
+            </choose>
         </where>
+        <!-- 按照ID降序排列，显示最新的考试计划 -->
         order by id desc
     </select>
 
+    <!-- 根据ID查询单个考试计划 -->
     <select id="selectById" resultType="com.example.entity.Examplan">
+        <!-- 查询时使用基础列，确保一致性 -->
         select
         <include refid="Base_Column_List" />
         from examplan
-        where id = #{id}
+        where id = #{id}  <!-- 精确查询指定ID的考试计划 -->
     </select>
 
+    <!-- 根据ID删除指定的考试计划 -->
     <delete id="deleteById">
+        <!-- 删除指定ID的记录 -->
         delete from examplan
-        where  id = #{id}
+        where id = #{id}  <!-- 根据ID精确删除 -->
     </delete>
 
+    <!-- 插入新的考试计划，动态生成插入字段和值 -->
     <insert id="insert" parameterType="com.example.entity.Examplan" useGeneratedKeys="true">
+        <!-- 使用trim标签生成插入的字段部分，去除多余的逗号 -->
         insert into examplan
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="id != null">id,</if>
-                <if test="name != null">name,</if>
-                <if test="content != null">content,</if>
-                <if test="time != null">time,</if>
+            <!-- 根据传入的参数动态生成字段 -->
+            <choose>
+                <when test="id != null">id,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">name,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">time,</when>
+                <otherwise></otherwise>
+            </choose>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-                <if test="id != null">#{id},</if>
-                <if test="name != null">#{name},</if>
-                <if test="content != null">#{content},</if>
-                <if test="time != null">#{time},</if>
+            <!-- 根据传入的参数动态生成字段对应的值 -->
+            <choose>
+                <when test="id != null">#{id},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">#{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">#{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">#{time},</when>
+                <otherwise></otherwise>
+            </choose>
         </trim>
     </insert>
 
+    <!-- 更新指定ID的考试计划 -->
     <update id="updateById" parameterType="com.example.entity.Examplan">
         update examplan
         <set>
-            <if test="name != null">
-                name = #{name},
-            </if>
-            <if test="content != null">
-                content = #{content},
-            </if>
-            <if test="time != null">
-                time = #{time},
-            </if>
+            <!-- 仅更新不为空的字段 -->
+            <choose>
+                <when test="name != null">name = #{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong = #{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">time = #{time},</when>
+                <otherwise></otherwise>
+            </choose>
         </set>
-        where id = #{id} 
+        where id = #{id}  <!-- 根据ID精确更新 -->
     </update>
 
 </mapper>

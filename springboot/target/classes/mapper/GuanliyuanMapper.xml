@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.GuanliyuanMapper">
+
+    <!-- 定义基础列列表，避免重复代码 -->
+    <sql id="Base_Column_List">
+        id,username,password,name,phone,email,avatar,role
+    </sql>
+
+    <!-- 查询所有管理员信息，支持按条件过滤 -->
+    <select id="selectAll" resultType="com.example.entity.Guanliyuan">
+        <!-- 查询指定的列，列由Base_Column_List提供 -->
+        select
+        <include refid="Base_Column_List" />
+        from guanliyuan
+        <where>
+            <!-- 使用choose来重构动态条件 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <when test="username != null"> and username like concat('%', #{username}, '%')</when>
+                <when test="password != null"> and password = #{password}</when>
+                <when test="name != null"> and name = #{name}</when>
+                <when test="phone != null"> and phone = #{phone}</when>
+                <when test="email != null"> and email = #{email}</when>
+                <when test="avatar != null"> and avatar = #{avatar}</when>
+                <when test="role != null"> and role = #{role}</when>
+                <!-- 使用otherwise来处理没有满足的情况 -->
+                <otherwise></otherwise>
+            </choose>
+        </where>
+    </select>
+
+
+    <!-- 根据ID查询单个管理员信息 -->
+    <select id="selectById" resultType="com.example.entity.Guanliyuan">
+        <!-- 查询指定的列，列由Base_Column_List提供 -->
+        select
+        <include refid="Base_Column_List" />
+        from guanliyuan
+        <!-- 根据管理员的id进行查询 -->
+        where id = #{id}
+    </select>
+
+    <!-- 根据ID删除管理员信息 -->
+    <delete id="deleteById">
+        <!-- 删除指定id的管理员记录 -->
+        delete from guanliyuan
+        where  id = #{id}
+    </delete>
+
+    <insert id="insert" parameterType="com.example.entity.Guanliyuan" useGeneratedKeys="true">
+        insert into guanliyuan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <choose>
+                <when test="id != null">id,</when>
+            </choose>
+            <choose>
+                <when test="username != null">username,</when>
+            </choose>
+            <choose>
+                <when test="password != null">password,</when>
+            </choose>
+            <choose>
+                <when test="name != null">name,</when>
+            </choose>
+            <choose>
+                <when test="phone != null">phone,</when>
+            </choose>
+            <choose>
+                <when test="email != null">email,</when>
+            </choose>
+            <choose>
+                <when test="avatar != null">avatar,</when>
+            </choose>
+            <choose>
+                <when test="role != null">role,</when>
+            </choose>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <choose>
+                <when test="id != null">#{id},</when>
+            </choose>
+            <choose>
+                <when test="username != null">#{username},</when>
+            </choose>
+            <choose>
+                <when test="password != null">#{password},</when>
+            </choose>
+            <choose>
+                <when test="name != null">#{name},</when>
+            </choose>
+            <choose>
+                <when test="phone != null">#{phone},</when>
+            </choose>
+            <choose>
+                <when test="email != null">#{email},</when>
+            </choose>
+            <choose>
+                <when test="avatar != null">#{avatar},</when>
+            </choose>
+            <choose>
+                <when test="role != null">#{role},</when>
+            </choose>
+        </trim>
+    </insert>
+
+    <!-- 根据ID更新管理员信息 -->
+    <update id="updateById" parameterType="com.example.entity.Guanliyuan">
+        update guanliyuan
+        <set>
+            <choose>
+                <when test="username != null">
+                    username = #{username},
+                </when>
+            </choose>
+            <choose>
+                <when test="password != null">
+                    password = #{password},
+                </when>
+            </choose>
+            <choose>
+                <when test="name != null">
+                    name = #{name},
+                </when>
+            </choose>
+            <choose>
+                <when test="phone != null">
+                    phone = #{phone},
+                </when>
+            </choose>
+            <choose>
+                <when test="email != null">
+                    email = #{email},
+                </when>
+            </choose>
+            <choose>
+                <when test="avatar != null">
+                    avatar = #{avatar},
+                </when>
+            </choose>
+            <choose>
+                <when test="role != null">
+                    role = #{role},
+                </when>
+            </choose>
+        </set>
+        where id = #{id}
+    </update>
+
+
+</mapper>

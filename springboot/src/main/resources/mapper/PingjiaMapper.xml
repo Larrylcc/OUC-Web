@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.PingjiaMapper">
+
+    <!-- 定义基础列，便于在多个查询中复用 -->
+    <sql id="Base_Column_List">
+        id, name, laoshi, xuesheng, neirong, time
+    </sql>
+
+    <!-- 查询所有评论，支持根据不同条件进行筛选 -->
+    <select id="selectAll" resultType="com.example.entity.Pingjia">
+        <!-- 引入基础列，避免重复列出字段 -->
+        select
+        <include refid="Base_Column_List" />
+        from pingjia
+        <where>
+            <!-- 使用 choose 和 when 进行条件判断 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="laoshi != null"> and laoshi like concat('%', #{laoshi}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null"> and neirong like concat('%', #{neirong}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+        </where>
+        <!-- 按id降序排序 -->
+        order by id desc
+    </select>
+
+    <!-- 根据评论ID查询单个评论记录 -->
+    <select id="selectById" resultType="com.example.entity.Pingjia">
+        <!-- 查询单个评论的所有字段 -->
+        select
+        <include refid="Base_Column_List" />
+        from pingjia
+        where id = #{id}  <!-- 精确匹配id -->
+    </select>
+
+    <!-- 根据评论ID删除评论记录 -->
+    <delete id="deleteById">
+        <!-- 删除指定ID的评论记录 -->
+        delete from pingjia
+        where id = #{id}  <!-- 根据id精确删除 -->
+    </delete>
+
+    <!-- 插入新评论，支持动态字段插入 -->
+    <insert id="insert" parameterType="com.example.entity.Pingjia" useGeneratedKeys="true">
+        insert into pingjia
+        <!-- 动态生成插入的列名 -->
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <choose>
+                <when test="id != null">id,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">name,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">time,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="laoshi != null">laoshi,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuesheng != null">xuesheng,</when>
+                <otherwise></otherwise>
+            </choose>
+        </trim>
+
+        <!-- 动态生成对应的值 -->
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <choose>
+                <when test="id != null">#{id},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">#{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">#{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">#{time},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="laoshi != null">#{laoshi},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuesheng != null">#{xuesheng},</when>
+                <otherwise></otherwise>
+            </choose>
+        </trim>
+    </insert>
+
+    <!-- 根据ID更新评论记录，支持动态字段更新 -->
+    <update id="updateById" parameterType="com.example.entity.Pingjia">
+        update pingjia
+        <set>
+            <choose>
+                <when test="name != null">
+                    name = #{name},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">
+                    neirong = #{neirong},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">
+                    time = #{time},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="laoshi != null">
+                    laoshi = #{laoshi},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuesheng != null">
+                    xuesheng = #{xuesheng},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+        </set>
+        where id = #{id}  <!-- 根据id更新评论 -->
+    </update>
+
+</mapper>

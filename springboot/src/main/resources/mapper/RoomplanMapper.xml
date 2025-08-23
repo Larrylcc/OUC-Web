@@ -4,69 +4,140 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.RoomplanMapper">
 
+    <!-- 定义基础列，用于查询中避免重复列出字段 -->
     <sql id="Base_Column_List">
-        id,name,content,status,num
+        id, name, neirong, status, renshu, build
     </sql>
 
+    <!-- 查询所有房间计划，支持动态筛选 -->
     <select id="selectAll" resultType="com.example.entity.Roomplan">
+        <!-- 使用基础列，以避免重复列出所有字段 -->
         select
         <include refid="Base_Column_List" />
         from roomplan
         <where>
-            <if test="id != null"> and id= #{id}</if>
-            <if test="name != null"> and name like concat('%', #{name}, '%')</if>
-            <if test="status != null"> and status = #{status}</if>
+            <!-- 只有当条件不为null时才会生成对应的查询 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null"> and name like concat('%', #{name}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="status != null"> and status = #{status}</when>
+                <otherwise></otherwise>
+            </choose>
         </where>
+        <!-- 默认按房间计划ID降序排列，展示最新的记录 -->
         order by id desc
     </select>
 
+    <!-- 根据ID查询特定房间计划 -->
     <select id="selectById" resultType="com.example.entity.Roomplan">
+        <!-- 查询特定房间计划时，使用基础列，避免重复定义字段 -->
         select
         <include refid="Base_Column_List" />
         from roomplan
-        where id = #{id}
+        where id = #{id} <!-- 精确匹配ID来查询特定房间计划 -->
     </select>
 
+    <!-- 根据ID删除指定的房间计划 -->
     <delete id="deleteById">
+        <!-- 删除特定ID的房间计划记录 -->
         delete from roomplan
-        where  id = #{id}
+        where id = #{id} <!-- 通过ID精确删除 -->
     </delete>
 
+    <!-- 插入新的房间计划，动态生成插入字段 -->
     <insert id="insert" parameterType="com.example.entity.Roomplan" useGeneratedKeys="true">
+        <!-- 使用<trim>标签来避免多余的逗号，动态添加要插入的字段 -->
         insert into roomplan
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="id != null">id,</if>
-                <if test="name != null">name,</if>
-                <if test="content != null">content,</if>
-                <if test="status != null">status,</if>
-                <if test="num != null">num,</if>
+            <!-- 仅当字段不为null时才添加相应的字段 -->
+            <choose>
+                <when test="id != null">id,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">name,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="status != null">status,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="renshu != null">renshu,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="build != null">build,</when>
+                <otherwise></otherwise>
+            </choose>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-                <if test="id != null">#{id},</if>
-                <if test="name != null">#{name},</if>
-                <if test="content != null">#{content},</if>
-                <if test="status != null">#{status},</if>
-                <if test="num != null">#{num},</if>
+            <!-- 仅当字段不为null时才添加对应的值 -->
+            <choose>
+                <when test="id != null">#{id},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">#{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">#{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="status != null">#{status},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="renshu != null">#{renshu},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="build != null">#{build},</when>
+                <otherwise></otherwise>
+            </choose>
         </trim>
     </insert>
 
+    <!-- 根据ID更新房间计划信息 -->
     <update id="updateById" parameterType="com.example.entity.Roomplan">
         update roomplan
         <set>
-            <if test="name != null">
-                name = #{name},
-            </if>
-            <if test="content != null">
-                content = #{content},
-            </if>
-            <if test="status != null">
-                status = #{status},
-            </if>
-            <if test="num != null">
-                num = #{num},
-            </if>
+            <!-- 只有当字段不为null时才进行更新 -->
+            <choose>
+                <when test="name != null">name = #{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong = #{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="status != null">status = #{status},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="renshu != null">renshu = #{renshu},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="build != null">build = #{build},</when>
+                <otherwise></otherwise>
+            </choose>
         </set>
-        where id = #{id} 
+        <!-- 根据ID精确更新特定的房间计划 -->
+        where id = #{id}
     </update>
 
 </mapper>

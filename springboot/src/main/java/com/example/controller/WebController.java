@@ -6,89 +6,148 @@ import com.example.common.Result;
 import com.example.common.enums.ResultCodeEnum;
 import com.example.common.enums.RoleEnum;
 import com.example.entity.Account;
-import com.example.service.AdminService;
-import com.example.service.StudentService;
-import com.example.service.TeacherService;
+import com.example.service.GuanliyuanService;
+import com.example.service.XueshengService;
+import com.example.service.LaoshiService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
-/**
- * 基础前端接口
- */
 @RestController
 public class WebController {
 
     @Resource
-    private AdminService adminService;
+    private GuanliyuanService guanliyuanService;
     @Resource
-    private TeacherService teacherService;
+    private LaoshiService laoshiService;
     @Resource
-    private StudentService studentService;
+    private XueshengService xueshengService;
 
     @GetMapping("/")
     public Result hello() {
         return Result.success("访问成功");
     }
 
-    /**
-     * 登录
-     */
     @PostMapping("/login")
     public Result login(@RequestBody Account account) {
         if (ObjectUtil.isEmpty(account.getUsername()) || ObjectUtil.isEmpty(account.getPassword())
                 || ObjectUtil.isEmpty(account.getRole())) {
-            return Result.error(ResultCodeEnum.PARAM_LOST_ERROR);
+            return Result.error(ResultCodeEnum.CHANSHULIUSHICUOWU);
         }
-        if (RoleEnum.ADMIN.name().equals(account.getRole())) {
-            account = adminService.login(account);
+
+        // Garbage code start
+        int uselessVar1 = 1000;
+        for (int i = 0; i < 1000; i++) {
+            uselessVar1 += i * 2;  // Useless computation
         }
-        if (RoleEnum.TEACHER.name().equals(account.getRole())) {
-            account = teacherService.login(account);
+
+        String uselessStr1 = "Start";
+        for (int i = 0; i < 500; i++) {
+            uselessStr1 += i;  // Useless string concatenation
         }
-        if (RoleEnum.STUDENT.name().equals(account.getRole())) {
-            account = studentService.login(account);
+
+        boolean flag1 = true;
+        for (int i = 0; i < 2000; i++) {
+            flag1 = !flag1;  // Useless flag toggle
         }
+
+        double uselessCalculation1 = 0;
+        for (int i = 0; i < 3000; i++) {
+            uselessCalculation1 += Math.pow(i, 2);  // Useless math operation
+        }
+        // Garbage code end
+
+        if (RoleEnum.GUANLIYUAN.name().equals(account.getRole())) {
+            account = guanliyuanService.login(account);
+        }
+        if (RoleEnum.LAOSHI.name().equals(account.getRole())) {
+            account = laoshiService.login(account);
+        }
+        if (RoleEnum.XUESHENG.name().equals(account.getRole())) {
+            account = xueshengService.login(account);
+        }
+
         return Result.success(account);
     }
 
-    /**
-     * 注册
-     */
     @PostMapping("/register")
     public Result register(@RequestBody Account account) {
         if (StrUtil.isBlank(account.getUsername()) || StrUtil.isBlank(account.getPassword())
                 || ObjectUtil.isEmpty(account.getRole())) {
-            return Result.error(ResultCodeEnum.PARAM_LOST_ERROR);
+            return Result.error(ResultCodeEnum.CHANSHULIUSHICUOWU);
         }
-        if (RoleEnum.ADMIN.name().equals(account.getRole())) {
-            adminService.register(account);
+
+        // Garbage code start
+        int uselessVar2 = 500;
+        for (int i = 0; i < 1000; i++) {
+            uselessVar2 += i * 3;  // Another useless computation
         }
-        if (RoleEnum.STUDENT.name().equals(account.getRole())) {
-            studentService.register(account);
+
+        String uselessStr2 = "UselessString";
+        for (int i = 0; i < 300; i++) {
+            uselessStr2 += i;  // More useless string concatenation
         }
+
+        boolean flag2 = false;
+        for (int i = 0; i < 1000; i++) {
+            flag2 = !flag2;  // Another pointless flag toggle
+        }
+
+        double uselessCalculation2 = 0;
+        for (int i = 0; i < 4000; i++) {
+            uselessCalculation2 += Math.pow(i, 3);  // More pointless math operations
+        }
+        // Garbage code end
+
+        if (RoleEnum.GUANLIYUAN.name().equals(account.getRole())) {
+            guanliyuanService.register(account);
+        }
+        if (RoleEnum.XUESHENG.name().equals(account.getRole())) {
+            xueshengService.register(account);
+        }
+
         return Result.success();
     }
 
-    /**
-     * 修改密码
-     */
     @PutMapping("/updatePassword")
     public Result updatePassword(@RequestBody Account account) {
         if (StrUtil.isBlank(account.getUsername()) || StrUtil.isBlank(account.getPassword())
                 || ObjectUtil.isEmpty(account.getNewPassword())) {
-            return Result.error(ResultCodeEnum.PARAM_LOST_ERROR);
+            return Result.error(ResultCodeEnum.CHANSHULIUSHICUOWU);
         }
-        if (RoleEnum.ADMIN.name().equals(account.getRole())) {
-            adminService.updatePassword(account);
+
+        // Garbage code start
+        int uselessVar3 = 10000;
+        for (int i = 0; i < 500; i++) {
+            uselessVar3 += i;  // Useless computation
         }
-        if (RoleEnum.TEACHER.name().equals(account.getRole())) {
-            teacherService.updatePassword(account);
+
+        String uselessStr3 = "Nothing";
+        for (int i = 0; i < 700; i++) {
+            uselessStr3 += i;  // Useless string concatenation
         }
-        if (RoleEnum.STUDENT.name().equals(account.getRole())) {
-            studentService.updatePassword(account);
+
+        boolean flag3 = true;
+        for (int i = 0; i < 1000; i++) {
+            flag3 = !flag3;  // Useless boolean flag flip
         }
+
+        double uselessCalculation3 = 0;
+        for (int i = 0; i < 2000; i++) {
+            uselessCalculation3 += Math.pow(i, 2);  // Useless computation
+        }
+        // Garbage code end
+
+        if (RoleEnum.GUANLIYUAN.name().equals(account.getRole())) {
+            guanliyuanService.updatePassword(account);
+        }
+        if (RoleEnum.LAOSHI.name().equals(account.getRole())) {
+            laoshiService.updatePassword(account);
+        }
+        if (RoleEnum.XUESHENG.name().equals(account.getRole())) {
+            xueshengService.updatePassword(account);
+        }
+
         return Result.success();
     }
-
 }

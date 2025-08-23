@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.XuankeMapper">
+
+    <!-- 定义基础列列表，在多个查询中复用，避免重复代码 -->
+    <sql id="Base_Column_List">
+        id, teacher_id, student_id, course_id, score_c
+    </sql>
+
+    <!-- 查询所有选择记录，支持动态条件过滤 -->
+    <select id="selectAll" resultType="com.example.entity.Xuanke">
+        <!-- 选择需要查询的字段，包括课程、学生和教师的信息 -->
+        select
+        c.id, c.teacher_id, c.student_id, c.course_id, c.score_c,
+        t.name as jiaoshimingcheng,  <!-- 教师名称 -->
+        s.name as xueshengxingcheng,  <!-- 学生名称 -->
+        co.*                    <!-- 课程表的所有字段 -->
+        from xuanke c
+        left join laoshi t on c.teacher_id = t.id  <!-- 关联教师表 -->
+        left join xuesheng s on c.student_id = s.id  <!-- 关联学生表 -->
+        left join course co on c.course_id = co.id  <!-- 关联课程表 -->
+
+        <where>
+            <!-- 根据id查询 -->
+            <choose>
+                <when test="id != null"> and c.id = #{id}</when>
+            </choose>
+            <!-- 根据成绩查询 -->
+            <choose>
+                <when test="scorec != null"> and c.score_c = #{scorec}</when>
+            </choose>
+            <!-- 根据教师ID查询 -->
+            <choose>
+                <when test="teacherId != null"> and c.teacher_id = #{teacherId}</when>
+            </choose>
+            <!-- 根据学生ID进行模糊查询 -->
+            <choose>
+                <when test="studentId != null"> and c.student_id like concat('%', #{studentId}, '%')</when>
+            </choose>
+            <!-- 根据课程ID查询 -->
+            <choose>
+                <when test="courseId != null"> and c.course_id = #{courseId}</when>
+            </choose>
+            <!-- 根据学生姓名进行模糊查询 -->
+            <choose>
+                <when test="xueshengxingcheng != null"> and s.name like concat('%', #{xueshengxingcheng}, '%')</when>
+            </choose>
+            <!-- 根据课程名称进行模糊查询 -->
+            <choose>
+                <when test="name != null"> and co.name like concat('%', #{name}, '%') </when>
+            </choose>
+        </where>
+
+        <!-- 按照ID降序排列 -->
+        order by c.id desc
+    </select>
+
+    <!-- 根据ID查询单条选择记录 -->
+    <select id="selectById" resultType="com.example.entity.Xuanke">
+        <!-- 查询所有字段 -->
+        select <include refid="Base_Column_List" />
+        from xuanke
+        where id = #{id}
+    </select>
+
+    <!-- 根据ID删除选择记录 -->
+    <delete id="deleteById">
+        <!-- 删除选择记录 -->
+        delete from xuanke
+        where id = #{id}
+    </delete>
+
+    <!-- 插入新选择记录 -->
+    <insert id="insert" parameterType="com.example.entity.Xuanke" useGeneratedKeys="true">
+        <!-- 插入记录时仅包含teacher_id, student_id, course_id, score_c字段 -->
+        insert into xuanke (teacher_id, student_id, course_id, score_c)
+        values (#{teacherId}, #{studentId}, #{courseId}, #{scorec})
+    </insert>
+
+    <!-- 根据ID更新选择记录 -->
+    <update id="updateById" parameterType="com.example.entity.Xuanke">
+        update xuanke
+        <set>
+            <!-- 动态更新字段：如果字段不为空，则更新对应值 -->
+            <choose>
+                <when test="teacherId != null">teacher_id = #{teacherId},</when>
+            </choose>
+            <choose>
+                <when test="studentId != null">student_id = #{studentId},</when>
+            </choose>
+            <choose>
+                <when test="courseId != null">course_id = #{courseId},</when>
+            </choose>
+            <choose>
+                <when test="scorec != null">score_c = #{scorec},</when>
+            </choose>
+        </set>
+        where id = #{id} <!-- 根据ID找到对应记录 -->
+    </update>
+
+</mapper>

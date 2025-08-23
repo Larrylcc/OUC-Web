@@ -73,7 +73,4 @@ export default {
 </script>
 
 <style scoped>
-/deep/.el-form-item__label {
-  font-weight: bold;
-}
 </style>

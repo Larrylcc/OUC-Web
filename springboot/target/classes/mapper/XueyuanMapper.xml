@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.XueyuanMapper">
+
+    <!-- 定义基础列列表，用于复用相同的列集合 -->
+    <sql id="Base_Column_List">
+        id, name, neirong  <!-- 包含id, name, 和 neirong 字段 -->
+    </sql>
+
+    <!-- 查询所有大学的记录，并支持按条件筛选 -->
+    <select id="selectAll" resultType="com.example.entity.Xueyuan">
+        <!-- 选择基本列：id, name 和 neirong -->
+        select
+        <include refid="Base_Column_List" />
+        from xueyuan
+        <where>
+            <!-- 使用 choose 和 when 进行条件判断 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null"> and name like concat('%', #{name}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+        </where>
+
+        <!-- 按照id降序排列查询结果 -->
+        order by id desc
+    </select>
+
+    <!-- 根据id查询单条大学记录 -->
+    <select id="selectById" resultType="com.example.entity.Xueyuan">
+        <!-- 查询指定ID的大学记录 -->
+        select
+        <include refid="Base_Column_List" />
+        from xueyuan
+        where id = #{id}  <!-- 根据id进行精准查询 -->
+    </select>
+
+    <!-- 根据大学ID删除记录 -->
+    <delete id="deleteById">
+        <!-- 删除指定ID的大学记录 -->
+        delete from xueyuan
+        where id = #{id}  <!-- 通过id定位并删除 -->
+    </delete>
+
+    <!-- 插入新大学记录，支持动态字段插入 -->
+    <insert id="insert" parameterType="com.example.entity.Xueyuan" useGeneratedKeys="true">
+        <!-- 动态生成插入的字段（避免null值字段） -->
+        insert into xueyuan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <!-- 使用 choose 和 when 进行条件判断 -->
+            <choose>
+                <when test="id != null">id,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">name,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong,</when>
+                <otherwise></otherwise>
+            </choose>
+        </trim>
+
+        <!-- 动态生成插入的值（与字段相对应） -->
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <!-- 使用 choose 和 when 进行条件判断 -->
+            <choose>
+                <when test="id != null">#{id},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">#{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">#{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+        </trim>
+    </insert>
+
+    <!-- 根据ID更新大学记录，支持动态更新 -->
+    <update id="updateById" parameterType="com.example.entity.Xueyuan">
+        update xueyuan
+        <set>
+            <!-- 使用 choose 和 when 进行条件判断 -->
+            <choose>
+                <when test="name != null">
+                    name = #{name},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">
+                    neirong = #{neirong},
+                </when>
+                <otherwise></otherwise>
+            </choose>
+        </set>
+        where id = #{id}  <!-- 根据ID进行精准更新 -->
+    </update>
+
+</mapper>

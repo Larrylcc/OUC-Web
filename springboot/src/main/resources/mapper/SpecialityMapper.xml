@@ -4,68 +4,124 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.SpecialityMapper">
 
+    <!-- 定义查询基础列，减少重复代码 -->
     <sql id="Base_Column_List">
-        id,name,content,college_id,score
+        id, name, neirong, college_id, xuefen
     </sql>
 
+    <!-- 查询所有专业信息，并关联查询所在学院的名称 -->
     <select id="selectAll" resultType="com.example.entity.Speciality">
-        select speciality.*, college.name as collegeName
+        <!-- 查询所有专业及其关联的学院名称 -->
+        select speciality.*, xueyuan.name as collegeName
         from speciality
-        left join college on speciality.college_id = college.id
+        left join xueyuan on speciality.college_id = xueyuan.id
         <where>
-            <if test="id != null"> and id= #{id}</if>
-            <if test="name != null"> and speciality.name like concat('%', #{name}, '%')</if>
+            <!-- 动态条件，根据传入的参数生成查询条件 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null"> and speciality.name like concat('%', #{name}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
         </where>
+        <!-- 根据ID降序排列，确保返回最新的专业信息 -->
         order by id desc
     </select>
 
+    <!-- 根据ID查询特定的专业信息 -->
     <select id="selectById" resultType="com.example.entity.Speciality">
+        <!-- 查询指定ID的专业信息，使用基础列定义 -->
         select
         <include refid="Base_Column_List" />
         from speciality
-        where id = #{id}
+        where id = #{id} <!-- 精确匹配ID -->
     </select>
 
+    <!-- 删除指定ID的专业记录 -->
     <delete id="deleteById">
+        <!-- 根据ID删除特定的专业记录 -->
         delete from speciality
-        where  id = #{id}
+        where id = #{id} <!-- 通过ID定位并删除 -->
     </delete>
 
+    <!-- 插入新的专业记录，字段和值动态生成 -->
     <insert id="insert" parameterType="com.example.entity.Speciality" useGeneratedKeys="true">
+        <!-- 动态生成插入字段，避免插入无效字段 -->
         insert into speciality
         <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="id != null">id,</if>
-                <if test="name != null">name,</if>
-                <if test="content != null">content,</if>
-                <if test="collegeId != null">college_id,</if>
-                <if test="score != null">score,</if>
+            <!-- 只有在字段不为null时，才会加入到插入字段中 -->
+            <choose>
+                <when test="id != null">id,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">name,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="collegeId != null">college_id,</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuefen != null">xuefen,</when>
+                <otherwise></otherwise>
+            </choose>
         </trim>
+        <!-- 动态生成插入的值，确保插入时仅包含非null字段 -->
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-                <if test="id != null">#{id},</if>
-                <if test="name != null">#{name},</if>
-                <if test="content != null">#{content},</if>
-                <if test="collegeId != null">#{collegeId},</if>
-                <if test="score != null">#{score},</if>
+            <choose>
+                <when test="id != null">#{id},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">#{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">#{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="collegeId != null">#{collegeId},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuefen != null">#{xuefen},</when>
+                <otherwise></otherwise>
+            </choose>
         </trim>
     </insert>
 
+    <!-- 根据ID更新专业信息，只有在字段不为null时才会更新 -->
     <update id="updateById" parameterType="com.example.entity.Speciality">
         update speciality
         <set>
-            <if test="name != null">
-                name = #{name},
-            </if>
-            <if test="content != null">
-                content = #{content},
-            </if>
-            <if test="collegeId != null">
-                college_id = #{collegeId},
-            </if>
-            <if test="score != null">
-                score = #{score},
-            </if>
+            <!-- 只有当字段不为null时，才会进行更新 -->
+            <choose>
+                <when test="name != null">name = #{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong = #{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="collegeId != null">college_id = #{collegeId},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuefen != null">xuefen = #{xuefen},</when>
+                <otherwise></otherwise>
+            </choose>
         </set>
-        where id = #{id} 
+        <!-- 根据ID定位并更新专业记录 -->
+        where id = #{id}
     </update>
 
 </mapper>

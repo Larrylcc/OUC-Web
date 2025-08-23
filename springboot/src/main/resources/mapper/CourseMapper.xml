@@ -4,94 +4,104 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.CourseMapper">
 
+    <!-- 定义基础列，用于在查询中复用，避免字段重复声明 -->
     <sql id="Base_Column_List">
-        id,name,type,teacher_id,score,num,room,week,segment,status
+        id, name, type, teacher_id, xuefen, renshu, jiaoshi, xingqi, segment, status
     </sql>
 
+    <!-- 查询所有课程，支持根据不同条件动态筛选 -->
     <select id="selectAll" resultType="com.example.entity.Course">
-        select course.*, teacher.name as teacherName
-        from course
-        left join teacher on course.teacher_id = teacher.id
-        <where>
-            <if test="id != null"> and id= #{id}</if>
-            <if test="name != null"> and course.name like concat('%', #{name}, '%')</if>
-            <if test="teacherId != null"> and course.teacher_id = #{teacherId}</if>
-        </where>
-        order by id desc
-    </select>
-
-    <select id="selectById" resultType="com.example.entity.Course">
+        <!-- 引入基础列，避免重复声明字段 -->
         select
-        <include refid="Base_Column_List" />
-        from course
-        where id = #{id}
+        c.id, c.name, c.type, c.teacher_id, c.xuefen, c.renshu, c.jiaoshi, c.xingqi, c.segment, c.status,
+        t.name as jiaoshimingcheng  <!-- 从 laoshi 表联接获取教师名称 -->
+        from course c
+        left join laoshi t on c.teacher_id = t.id  <!-- 左连接教师表，获取课程对应的教师信息 -->
+        <where>
+            <!-- 根据传入的参数，动态生成查询条件 -->
+            <choose>
+                <when test="id != null"> and c.id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null"> and c.name like concat('%', #{name}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="teacherId != null"> and c.teacher_id = #{teacherId}</when>
+                <otherwise></otherwise>
+            </choose>
+        </where>
+        <!-- 按课程ID降序排列，显示最新添加的课程 -->
+        order by c.id desc
     </select>
 
+    <!-- 根据课程ID查询单个课程 -->
+    <select id="selectById" resultType="com.example.entity.Course">
+        <!-- 查询单个课程时使用基础列 -->
+        select <include refid="Base_Column_List" />
+        from course
+        where id = #{id}  <!-- 按课程ID精确查询 -->
+    </select>
+
+    <!-- 根据课程ID删除课程记录 -->
     <delete id="deleteById">
+        <!-- 删除指定ID的课程 -->
         delete from course
-        where  id = #{id}
+        where id = #{id}  <!-- 根据课程ID精确删除 -->
     </delete>
 
+    <!-- 插入新课程记录 -->
     <insert id="insert" parameterType="com.example.entity.Course" useGeneratedKeys="true">
-        insert into course
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="id != null">id,</if>
-                <if test="name != null">name,</if>
-                <if test="type != null">type,</if>
-                <if test="teacherId != null">teacher_id,</if>
-                <if test="score != null">score,</if>
-                <if test="num != null">num,</if>
-                <if test="room != null">room,</if>
-                <if test="week != null">week,</if>
-                <if test="segment != null">segment,</if>
-                <if test="status != null">status,</if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-                <if test="id != null">#{id},</if>
-                <if test="name != null">#{name},</if>
-                <if test="type != null">#{type},</if>
-                <if test="teacherId != null">#{teacherId},</if>
-                <if test="score != null">#{score},</if>
-                <if test="num != null">#{num},</if>
-                <if test="room != null">#{room},</if>
-                <if test="week != null">#{week},</if>
-                <if test="segment != null">#{segment},</if>
-                <if test="status != null">#{status},</if>
-        </trim>
+        <!-- 插入课程表中的数据 -->
+        insert into course (name, type, teacher_id, xuefen, renshu, jiaoshi, xingqi, segment, status)
+        values (#{name}, #{type}, #{teacherId}, #{xuefen}, #{renshu}, #{jiaoshi}, #{xingqi}, #{segment}, #{status})
+        <!-- useGeneratedKeys="true" 表示插入后会自动生成主键并回填到 Course 对象 -->
     </insert>
 
+    <!-- 更新课程记录，根据课程ID进行更新 -->
     <update id="updateById" parameterType="com.example.entity.Course">
         update course
         <set>
-            <if test="name != null">
-                name = #{name},
-            </if>
-            <if test="type != null">
-                type = #{type},
-            </if>
-            <if test="teacherId != null">
-                teacher_id = #{teacherId},
-            </if>
-            <if test="score != null">
-                score = #{score},
-            </if>
-            <if test="num != null">
-                num = #{num},
-            </if>
-            <if test="room != null">
-                room = #{room},
-            </if>
-            <if test="week != null">
-                week = #{week},
-            </if>
-            <if test="segment != null">
-                segment = #{segment},
-            </if>
-            <if test="status != null">
-                status = #{status},
-            </if>
+            <!-- 仅更新不为空的字段，避免无效的字段更新 -->
+            <choose>
+                <when test="name != null">name = #{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="type != null">type = #{type},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="teacherId != null">teacher_id = #{teacherId},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xuefen != null">xuefen = #{xuefen},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="renshu != null">renshu = #{renshu},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="jiaoshi != null">jiaoshi = #{jiaoshi},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="xingqi != null">xingqi = #{xingqi},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="segment != null">segment = #{segment},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="status != null">status = #{status},</when>
+                <otherwise></otherwise>
+            </choose>
         </set>
-        where id = #{id} 
+        where id = #{id}  <!-- 根据课程ID精确更新对应课程记录 -->
     </update>
 
 </mapper>

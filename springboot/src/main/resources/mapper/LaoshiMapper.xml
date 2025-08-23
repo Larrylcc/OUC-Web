@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.LaoshiMapper">
+
+    <!-- 基础列定义，避免重复列出相同的字段 -->
+    <sql id="Base_Column_List">
+        id, username, password, name, phone, email, avatar, role, title
+    </sql>
+
+    <!-- 查询所有教师的信息，根据传入的参数进行动态筛选 -->
+    <select id="selectAll" resultType="com.example.entity.Laoshi">
+        <!-- 引入基础列列表，避免重复列出所有字段 -->
+        select <include refid="Base_Column_List" />
+        from laoshi
+        <where>
+            <!-- 动态生成查询条件，只有传入的参数不为null时才会加上该条件 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="username != null"> and username like concat('%', #{username}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="password != null"> and password = #{password}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null"> and name = #{name}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="phone != null"> and phone = #{phone}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="email != null"> and email = #{email}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="avatar != null"> and avatar = #{avatar}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="role != null"> and role = #{role}</when>
+                <otherwise></otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <!-- 根据ID查询单个教师的信息 -->
+    <select id="selectById" resultType="com.example.entity.Laoshi">
+        <!-- 引用基础列列表，避免重复列出字段 -->
+        select <include refid="Base_Column_List" />
+        from laoshi
+        where id = #{id} <!-- 根据ID精确查找 -->
+    </select>
+
+    <!-- 根据ID删除教师信息 -->
+    <delete id="deleteById">
+        delete from laoshi
+        where id = #{id} <!-- 根据ID删除教师 -->
+    </delete>
+
+    <!-- 插入新教师的记录 -->
+    <insert id="insert" parameterType="com.example.entity.Laoshi" useGeneratedKeys="true">
+        <!-- 插入教师的各项信息，并自动生成ID -->
+        insert into laoshi (username, password, name, phone, email, avatar, role, title)
+        values (#{username}, #{password}, #{name}, #{phone}, #{email}, #{avatar}, #{role}, #{title})
+        <!-- useGeneratedKeys="true" 表示自动生成ID并赋值到实体的id字段 -->
+    </insert>
+
+    <!-- 更新指定ID的教师信息 -->
+    <update id="updateById" parameterType="com.example.entity.Laoshi">
+        update laoshi
+        <set>
+            <!-- 动态更新教师信息，只有不为null的字段才会参与更新 -->
+            <choose>
+                <when test="username != null">username = #{username},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="password != null">password = #{password},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="name != null">name = #{name},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="phone != null">phone = #{phone},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="email != null">email = #{email},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="avatar != null">avatar = #{avatar},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="role != null">role = #{role},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="title != null">title = #{title},</when>
+                <otherwise></otherwise>
+            </choose>
+        </set>
+        where id = #{id} <!-- 通过ID定位需要更新的教师 -->
+    </update>
+
+</mapper>

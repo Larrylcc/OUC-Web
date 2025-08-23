@@ -4,71 +4,88 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.mapper.NoticeMapper">
 
+    <!-- 定义基础列，用于复用查询字段，避免重复列出相同字段 -->
     <sql id="Base_Column_List">
-        id,title,content,time,user
+        id, title, neirong, time, user
     </sql>
 
+    <!-- 查询所有通知，支持动态条件筛选 -->
     <select id="selectAll" resultType="com.example.entity.Notice">
-        select
-        <include refid="Base_Column_List" />
+        <!-- 引用基础列，避免重复列出字段 -->
+        select <include refid="Base_Column_List" />
         from notice
         <where>
-            <if test="id != null"> and id= #{id}</if>
-            <if test="title != null"> and title like concat('%', #{title}, '%')</if>
-            <if test="content != null"> and content= #{content}</if>
-            <if test="time != null"> and time= #{time}</if>
-            <if test="user != null"> and user= #{user}</if>
+            <!-- 动态条件生成，只有传入的参数不为null时才加入查询条件 -->
+            <choose>
+                <when test="id != null"> and id = #{id}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="title != null"> and title like concat('%', #{title}, '%')</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null"> and neirong = #{neirong}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null"> and time = #{time}</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="user != null"> and user = #{user}</when>
+                <otherwise></otherwise>
+            </choose>
         </where>
+        <!-- 默认按ID降序排列，显示最新的通知 -->
         order by id desc
     </select>
 
+    <!-- 根据ID查询单个通知 -->
     <select id="selectById" resultType="com.example.entity.Notice">
-        select
-        <include refid="Base_Column_List" />
+        <!-- 查询单个通知时，使用基础列，保持一致性 -->
+        select <include refid="Base_Column_List" />
         from notice
-        where id = #{id}
+        where id = #{id} <!-- 精确查询指定ID的通知 -->
     </select>
 
+    <!-- 根据ID删除指定的通知 -->
     <delete id="deleteById">
+        <!-- 删除特定ID的通知记录 -->
         delete from notice
-        where  id = #{id}
+        where id = #{id} <!-- 精确删除指定ID的通知 -->
     </delete>
 
+    <!-- 插入新的通知，动态生成插入字段和值 -->
     <insert id="insert" parameterType="com.example.entity.Notice" useGeneratedKeys="true">
-        insert into notice
-        <trim prefix="(" suffix=")" suffixOverrides=",">
-                <if test="id != null">id,</if>
-                <if test="title != null">title,</if>
-                <if test="content != null">content,</if>
-                <if test="time != null">time,</if>
-                <if test="user != null">user,</if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-                <if test="id != null">#{id},</if>
-                <if test="title != null">#{title},</if>
-                <if test="content != null">#{content},</if>
-                <if test="time != null">#{time},</if>
-                <if test="user != null">#{user},</if>
-        </trim>
+        <!-- 插入通知时，列出所有需要插入的字段 -->
+        insert into notice (title, neirong, time, user)
+        values (#{title}, #{neirong}, #{time}, #{user}) <!-- 对应的字段值 -->
     </insert>
 
+    <!-- 根据ID更新通知信息 -->
     <update id="updateById" parameterType="com.example.entity.Notice">
         update notice
         <set>
-            <if test="title != null">
-                title = #{title},
-            </if>
-            <if test="content != null">
-                content = #{content},
-            </if>
-            <if test="time != null">
-                time = #{time},
-            </if>
-            <if test="user != null">
-                user = #{user},
-            </if>
+            <!-- 只有当字段不为null时才更新该字段 -->
+            <choose>
+                <when test="title != null">title = #{title},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="neirong != null">neirong = #{neirong},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="time != null">time = #{time},</when>
+                <otherwise></otherwise>
+            </choose>
+            <choose>
+                <when test="user != null">user = #{user},</when>
+                <otherwise></otherwise>
+            </choose>
         </set>
-        where id = #{id} 
+        where id = #{id} <!-- 根据ID精确更新 -->
     </update>
 
 </mapper>
